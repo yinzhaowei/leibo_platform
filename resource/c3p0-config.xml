@@ -1,0 +1,35 @@
+<c3p0-config>
+    <default-config>
+        <property name="user">wx01</property>
+        <property name="password">123456</property>
+        <property name="driverClass">com.mysql.jdbc.Driver</property>
+        <property name="jdbcUrl">jdbc:mysql://218.242.28.98:13306/test</property>
+
+        <property name="initialPoolSize">10</property>
+        <property name="maxIdleTime">30</property>
+        <property name="maxPoolSize">100</property>
+        <property name="minPoolSize">10</property>
+    </default-config>
+
+    <named-config name="local1">
+        <property name="user">blue</property>
+        <property name="password">blue_123</property>
+        <property name="driverClass">com.mysql.jdbc.Driver</property>
+        <property name="jdbcUrl">jdbc:mysql://10.140.245.206:3306/leibo?useUnicode=true&amp;characterEncoding=UTF-8</property>
+        <property name="initialPoolSize">5</property>
+        <property name="maxIdleTime">30</property>
+        <property name="maxPoolSize">10</property>
+        <property name="minPoolSize">5</property>
+    </named-config>
+
+    <named-config name="local">
+        <property name="user">root</property>
+        <property name="password"></property>
+        <property name="driverClass">com.mysql.jdbc.Driver</property>
+        <property name="jdbcUrl">jdbc:mysql://127.0.0.1:3306/leibo?useUnicode=true&amp;characterEncoding=UTF-8</property>
+        <property name="initialPoolSize">5</property>
+        <property name="maxIdleTime">30</property>
+        <property name="maxPoolSize">10</property>
+        <property name="minPoolSize">5</property>
+    </named-config>
+</c3p0-config>
