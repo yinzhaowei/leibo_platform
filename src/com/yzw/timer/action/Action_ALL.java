@@ -37,14 +37,16 @@ public class Action_ALL {
             LogUtil.info("**********增加历史信息表END*********");
         }
 
+        String phones = LocalDto.getPhones();
+
         if(!carinfoSql.equals("")) {
             LogUtil.info("**********增加车辆信息表BEGIN*********");
             LocalDto.addCarInfo(carinfoSql);
             LogUtil.info("**********增加车辆信息表END*********");
         }
 
-        List infoVOS = LocalDto.getRealTimeData();
-        List infoVOS2 = LocalDto.getRealTimeData1();
+        List infoVOS = LocalDto.getRealTimeData(phones);
+        List infoVOS2 = LocalDto.getRealTimeData1(phones);
         infoVOS = ProcessSqlUtil.handelVOS(infoVOS, infoVOS2);
         String infoSql = ProcessSqlUtil.getHistorySql(infoVOS);
         String delSql = ProcessSqlUtil.delRealTimeInfo();
@@ -63,7 +65,8 @@ public class Action_ALL {
         TCPClient gyptrc = new TCPClient();
         boolean flag = false;
         Iterator i$ = registerVOS.iterator();
-
+        if(registerVOS.size()<=0)
+            LogUtil.info("**********没有新车注册*********");
         while(i$.hasNext()) {
             HistroyVO vo = (HistroyVO)i$.next();
             int code = gyptrc.sendRenZheng();

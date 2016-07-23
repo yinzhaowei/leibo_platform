@@ -21,6 +21,11 @@ public class LocalDto {
     public LocalDto() {
     }
 
+    /**
+     * 获取车辆名称
+     * @param EV_ID
+     * @return
+     */
     public static String getCarName(String EV_ID) {
         Connection conn = null;
         PreparedStatement state = null;
@@ -47,6 +52,10 @@ public class LocalDto {
         return result;
     }
 
+    /**
+     * 获取车辆实时注册信息
+     * @return
+     */
     public static List<HistroyVO> getRealRegisterData() {
         Connection conn = null;
         PreparedStatement state = null;
@@ -77,13 +86,52 @@ public class LocalDto {
         return result;
     }
 
-    public static List<HistroyVO> getRealTimeData1() {
+    /**
+     * 获取车辆电话号码
+     * @return
+     */
+    public static String getPhones() {
+        Connection conn = null;
+        PreparedStatement state = null;
+        ArrayList result = new ArrayList();
+        String sql = "select phone from leibo_cars;";
+        LogUtil.info("getPhones sql=" + sql);
+        ResultSet rs = null;
+        StringBuffer bf = new StringBuffer();
+
+        try {
+            conn = JdbcLocalUtil.getConnection();
+            state = conn.prepareStatement(sql);
+            rs = state.executeQuery();
+
+            while(rs.next()) {
+                bf.append("'"+rs.getString("phone")+"'").append(",");
+            }
+
+            LogUtil.info("调用getPhones查询数据库成功！");
+        } catch (Exception var9) {
+            LogUtil.debug("调用getPhones异常" + var9.getMessage());
+        } finally {
+            JdbcLocalUtil.release(rs, state, conn);
+        }
+
+        if(bf.toString().length()>1)
+            return bf.toString().substring(0,bf.toString().length()-1);
+        return bf.toString();
+    }
+    /**
+     * 获取车辆最新信息（上报时间）
+     * @return
+     */
+    public static List<HistroyVO> getRealTimeData1(String phones) {
         Connection conn = null;
         PreparedStatement state = null;
         ArrayList result = new ArrayList();
         String currDate = DateUtil.getDate(0) + " 00:00:00";
-        String sql = "select * from  (select t1.*,t2.MOBILE_NUM as phone from " + CommonConstrants.curTable + " t1," + CommonConstrants.osa_carInfo + " t2 where t1.EV_ID=t2.EV_ID and t2.MANUFCTUR like\'%" + CommonConstrants.whereV + "%\' and t1.LAST_TIME >=\'" + currDate + "\' ORDER BY t1.autoid ASC ) a GROUP BY a.EV_ID  ";
-        LogUtil.info("getRealTimeData sql=" + sql);
+        //String sql = "select * from  (select t1.*,t2.MOBILE_NUM as phone from " + CommonConstrants.curTable + " t1," + CommonConstrants.osa_carInfo + " t2 where t1.EV_ID=t2.EV_ID and t2.MANUFCTUR like\'%" + CommonConstrants.whereV + "%\' and t1.LAST_TIME >=\'" + currDate + "\' ORDER BY t1.autoid ASC ) a GROUP BY a.EV_ID  ";
+
+        String sql = "select * from  (select t1.*,t2.MOBILE_NUM as phone from " + CommonConstrants.curTable + " t1," + CommonConstrants.osa_carInfo + " t2 where t1.EV_ID=t2.EV_ID and t1.EV_ID in(" + phones + ") and t1.LAST_TIME >=\'" + currDate + "\' ORDER BY t1.autoid ASC ) a GROUP BY a.EV_ID  ";
+        //LogUtil.info("getRealTimeData sql=" + sql);
         ResultSet rs = null;
 
         try {
@@ -108,13 +156,18 @@ public class LocalDto {
         return result;
     }
 
-    public static List<HistroyVO> getRealTimeData() {
+    /**
+     *
+     * @param phones
+     * @return
+     */
+    public static List<HistroyVO> getRealTimeData(String phones) {
         Connection conn = null;
         PreparedStatement state = null;
         ArrayList result = new ArrayList();
         String currDate = DateUtil.getDate(0) + " 00:00:00";
-        String sql = "select * from  (select t1.* from " + CommonConstrants.curTable + " t1," + CommonConstrants.osa_carInfo + " t2 where t1.EV_ID=t2.EV_ID and t2.MANUFCTUR like\'%" + CommonConstrants.whereV + "%\' and t1.LAST_TIME >=\'" + currDate + "\' ORDER BY t1.autoid DESC ) a GROUP BY a.EV_ID  ";
-        LogUtil.info("getRealTimeData sql=" + sql);
+        String sql = "select * from  (select t1.* from " + CommonConstrants.curTable + " t1," + CommonConstrants.osa_carInfo + " t2 where t1.EV_ID=t2.EV_ID and t1.EV_ID in(" + phones + ") and t1.LAST_TIME >=\'" + currDate + "\' ORDER BY t1.autoid DESC ) a GROUP BY a.EV_ID  ";
+        // LogUtil.info("getRealTimeData sql=" + sql);
         ResultSet rs = null;
 
         try {
@@ -139,6 +192,11 @@ public class LocalDto {
         return result;
     }
 
+    /**
+     * 判断是否创建新表
+     * @param table
+     * @return
+     */
     public static boolean isExistCurMonth(String table) {
         int total = 0;
         Connection conn = null;
@@ -171,7 +229,7 @@ public class LocalDto {
         boolean code = false;
         Connection conn = null;
         PreparedStatement state = null;
-        LogUtil.info("addHistory sql=" + sql);
+        //LogUtil.info("addHistory sql=" + sql);
         sql = DateUtil.utf8(sql);
         Object rs = null;
 
@@ -190,6 +248,10 @@ public class LocalDto {
 
     }
 
+    /**
+     * 增加历史信息
+     * @param sql
+     */
     public static void addCarInfo(String sql) {
         boolean code = false;
         Connection conn = null;
@@ -212,7 +274,9 @@ public class LocalDto {
         }
 
     }
-
+    /**
+     * 查询索引
+     */
     public static int getCarInfoIndex() {
         int total = 0;
         Connection conn = null;
@@ -294,5 +358,10 @@ public class LocalDto {
         }
 
         return total > 0;
+    }
+
+    public static void main(String[] args) {
+        String currDate = DateUtil.getDate(0) + " 00:00:00";
+        System.out.println(currDate);
     }
 }
